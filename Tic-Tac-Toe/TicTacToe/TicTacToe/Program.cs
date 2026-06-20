@@ -1,9 +1,12 @@
-﻿namespace TicTacToe;
+﻿using TicTacToe.MenuImplementation;
+using TicTacToe.MenuLib;
+
+namespace TicTacToe;
 
 class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        MenuRunner.Run(new MainMenu());
     }
 }
