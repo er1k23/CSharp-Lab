@@ -2,7 +2,7 @@
 
 using Generics_Exercises.Models;
 using Generics_Exercises.Algorithms;
-
+using Generics_Exercises.Constraints;
 
 class Program
 {
@@ -23,16 +23,26 @@ class Program
         
         // TASK #2
 
+        // int[] numbers = { 1, 2, 3, 4, 5 };
+        //
+        // int[] evens = Collections.Filter<int>(numbers, n => n % 2 == 0);
+        // string[] labels = Collections.Project<int, string>(evens, n => $"N{n}");
+        //
+        // Console.WriteLine(string.Join(", ", labels));
         
         //-------------------------------------------------
 
-        int[] numbers = { 1, 2, 3, 4, 5 };
 
-        int[] evens = Collections.Filter<int>(numbers, n => n % 2 == 0);
-        string[] labels = Collections.Project<int, string>(evens, n => $"N{n}");
 
-        Console.WriteLine(string.Join(", ", labels));
+        // TASK #3
+        
+        var entity = Factory.Create<SampleEntity>();
+        Console.WriteLine($"IsInitialized: {entity.IsInitialized}");
+        
+        
+        //-------------------------------------------------
 
+        
     }
 }
 
