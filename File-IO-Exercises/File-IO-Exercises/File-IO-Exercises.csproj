@@ -10,7 +10,6 @@
 
     <ItemGroup>
       <Folder Include="data\downloads\" />
-      <Folder Include="data\inbox\" />
       <Folder Include="data\logs\" />
       <Folder Include="data\reports\" />
     </ItemGroup>
