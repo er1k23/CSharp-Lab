@@ -1,0 +1,5 @@
+﻿2026-07-11 10:00:00 INFO Application started
+2026-07-11 10:00:05 ERROR Connection failed
+2026-07-11 10:00:10 INFO Retry attempt 1
+2026-07-11 10:00:15 ERROR Timeout occurred
+2026-07-11 10:00:20 INFO Обработка запроса завершена успешно
