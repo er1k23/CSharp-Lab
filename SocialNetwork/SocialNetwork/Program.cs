@@ -6,20 +6,27 @@ class Program
 {
     static void Main(string[] args)
     {
-        Database.EnsureSchema();
-        
+        // Database.EnsureSchema();
+        //
         // Database.InsertUser(            
-        //     "bob",
-        //     "test_hash2",
-        //     "Bob",
-        //     "Smith",
-        //     "1994-03-11");
-        
+        //     "odyssey",
+        //     "pas123",
+        //     "Matt",
+        //     "Damon",
+        //     "1970-10-11");
+        //
         // Database.GetUsers();
         
-        Database.GetUserById(1);
-            
-        Console.WriteLine("Everything Work");
+        // Database.GetUserById(1);
+
+        // Database.GetUserById(4);
+        // Database.UpdateUser(userId:4,firstName:"Tom",lastName:"Holland");
+        // Database.GetUserById(4);
+
+        
+        Database.DeleteUser(3);
+        
+        Console.WriteLine("Project successfully working");
         
     }
 }

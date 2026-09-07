@@ -8,8 +8,6 @@ public class Database
     
     private const string ConnectionString =
         "Host=localhost;Port=5433;Database=social-network;Username=admin;Password=admin123";
-
-    
     
     public static NpgsqlConnection Open()
     {
@@ -94,7 +92,8 @@ public class Database
         }
     }
 
-
+    
+    
     public static void GetUserById(int userId)
     {
         using var connection = Open();
@@ -117,4 +116,51 @@ public class Database
         }
         else { Console.WriteLine("User not found ( "); }
     }
+
+
+
+    public static void UpdateUser(
+        int userId,
+        string firstName,
+        string lastName)
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+                              UPDATE Users
+                              SET FirstName = @firstName,
+                              LastName = @lastName
+                              WHERE UserId = @userId
+                              """;
+
+        command.Parameters.AddWithValue("@userId", userId);
+        command.Parameters.AddWithValue("@firstName", firstName);
+        command.Parameters.AddWithValue("@lastName", lastName);
+
+        int rowAffected = command.ExecuteNonQuery();
+        
+        Console.WriteLine($"Rows affected: {rowAffected}");
+
+    }
+
+
+
+    public static void DeleteUser(int userId)
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+                              DELETE FROM Users
+                              WHERE UserId = @userId;
+                              """;
+
+        command.Parameters.AddWithValue("@userId",userId);
+        
+        int rowAffected = command.ExecuteNonQuery();
+        
+        Console.WriteLine($"Rows affected : {rowAffected}");
+    }
+    
 }
