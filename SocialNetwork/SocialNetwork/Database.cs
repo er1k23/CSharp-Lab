@@ -33,5 +33,31 @@ public class Database
         """;
 
     command.ExecuteNonQuery();
-    }                                  
+    }
+
+    public static void InsertUser(
+        string username,
+        string passwordHash,
+        string firstName,
+        string lastName,
+        string dateOfBirth)
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+        
+        command.CommandText = """
+                              INSERT INTO Users
+                                  (Username, PasswordHash, FirstName, LastName, DateOfBirth)
+                              VALUES
+                                  (@username, @passwordHash, @firstName, @lastName, @dateOfBirth);
+                              """;
+
+        command.Parameters.AddWithValue("@username", username);
+        command.Parameters.AddWithValue("@passwordHash", passwordHash);
+        command.Parameters.AddWithValue("@firstName", firstName);
+        command.Parameters.AddWithValue("@lastName", lastName);
+        command.Parameters.AddWithValue("@dateOfBirth", dateOfBirth);
+
+        command.ExecuteNonQuery();
+    }
 }
