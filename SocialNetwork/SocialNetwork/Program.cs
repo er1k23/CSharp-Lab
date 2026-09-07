@@ -6,9 +6,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        Database.EnsureSchema();
-        
-        
+        // Database.EnsureSchema();
+
         // Database.InsertUser(            
         //     "odyssey",
         //     "pas123",
@@ -33,7 +32,24 @@ class Program
         //
         // Console.WriteLine($"Bob ID: {userId}");
         
-        Database.AddFriendshipPair(1, 4);
+        // Database.AddFriendshipPair(1, 4);
+
+        Database.EnsureSchema();
+
+        int currentUsaerid = 1;
+        
+        string friendUsername = "odyssey";
+
+        int? friendUserId = Database.GetUserIdByUsername(friendUsername);
+
+        if (friendUserId == null)
+        {
+            Console.WriteLine("User not found");
+            return;
+        }
+        else { Database.AddFriendshipPair(currentUsaerid,friendUserId.Value);}
+        
+        Console.WriteLine("Friendship created");
         
         Console.WriteLine("Project successfully working");
         
