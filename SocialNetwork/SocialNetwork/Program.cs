@@ -8,12 +8,14 @@ class Program
     {
         Database.EnsureSchema();
         
-        Database.InsertUser(            
-            "erik",
-            "test_hash",
-            "Erik",
-            "Rumian",
-            "2004-01-01");
+        // Database.InsertUser(            
+        //     "bob",
+        //     "test_hash2",
+        //     "Bob",
+        //     "Smith",
+        //     "1994-03-11");
+        
+        Database.GetUsers();
         Console.WriteLine("Everything Work");
     }
 }

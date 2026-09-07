@@ -4,9 +4,12 @@ namespace SocialNetwork;
 
 public class Database
 {
+    
     private const string ConnectionString =
         "Host=localhost;Port=5433;Database=social-network;Username=admin;Password=admin123";
 
+    
+    
     public static NpgsqlConnection Open()
     {
         var connection = new NpgsqlConnection(ConnectionString);
@@ -14,6 +17,8 @@ public class Database
         return connection;
     }
 
+    
+    
     public static void EnsureSchema()
     {
         using var connection = Open();
@@ -35,6 +40,8 @@ public class Database
     command.ExecuteNonQuery();
     }
 
+    
+    
     public static void InsertUser(
         string username,
         string passwordHash,
@@ -59,5 +66,34 @@ public class Database
         command.Parameters.AddWithValue("@dateOfBirth", dateOfBirth);
 
         command.ExecuteNonQuery();
+    }
+
+
+
+    public static void GetUsers()
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+                              SELECT UserId, Username, FirstName, LastName
+                              FROM Users;
+                              """;
+
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            int userId = reader.GetInt32(0);
+            string username = reader.GetString(1);
+            string firstname = reader.GetString(2);
+            string lastname = reader.GetString(3);
+            
+            Console.WriteLine($"{userId}: {username} - {firstname} - {lastname}");
+        }
+        
+        
+        
+        
     }
 }
