@@ -6,7 +6,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        using var connection = Database.Open();
-        Console.WriteLine("Successfully connected to PostgreSQL!");
+        Database.EnsureSchema();
+        Console.WriteLine("User table is created!");
     }
 }
