@@ -28,6 +28,13 @@ class Program
         
         // Database.DeleteUser(3);
         
+        
+        // int? userId = Database.GetUserIdByUsername("bob");
+        //
+        // Console.WriteLine($"Bob ID: {userId}");
+        
+        Database.AddFriendshipPair(1, 4);
+        
         Console.WriteLine("Project successfully working");
         
     }

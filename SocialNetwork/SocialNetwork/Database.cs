@@ -183,5 +183,64 @@ public class Database
         
         Console.WriteLine($"Rows affected : {rowAffected}");
     }
-    
+
+
+
+    public static int? GetUserIdByUsername(string username)
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+                              SELECT UserId
+                              From Users
+                              WHERE Username = @username
+                              """;
+
+        command.Parameters.AddWithValue("@username", username);
+
+        object? result = command.ExecuteScalar();
+
+        if (result == null)
+        {
+            return null;
+        }
+        
+        return (int)result;
+    }
+
+
+
+    public static void AddFriendshipPair(int userId, int friendUserId)
+    {
+        using var connection = Open();
+        using var transaction = connection.BeginTransaction();
+        
+        using var command = connection.CreateCommand();
+
+        command.Transaction = transaction;
+
+        command.CommandText = """
+                              INSERT INTO Friends (UserId, FriendUserId)
+                              VALUES (@userId, @friendUserId);
+
+                              INSERT INTO Friends (UserId, FriendUserId)
+                              VALUES (@friendUserId, @userId);
+                              """;
+
+        command.Parameters.AddWithValue("@userId", userId);
+        command.Parameters.AddWithValue("@friendUserId", friendUserId);
+
+        try
+        {
+            command.ExecuteNonQuery();
+
+            transaction.Commit();
+        }
+        catch
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
 }
