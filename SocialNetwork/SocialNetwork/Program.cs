@@ -6,16 +6,18 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Database.EnsureSchema();
-        //
+        Database.EnsureSchema();
+        
+        
         // Database.InsertUser(            
         //     "odyssey",
         //     "pas123",
         //     "Matt",
         //     "Damon",
         //     "1970-10-11");
-        //
+
         // Database.GetUsers();
+        
         
         // Database.GetUserById(1);
 
@@ -24,7 +26,7 @@ class Program
         // Database.GetUserById(4);
 
         
-        Database.DeleteUser(3);
+        // Database.DeleteUser(3);
         
         Console.WriteLine("Project successfully working");
         
