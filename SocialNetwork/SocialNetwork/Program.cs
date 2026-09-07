@@ -15,7 +15,11 @@ class Program
         //     "Smith",
         //     "1994-03-11");
         
-        Database.GetUsers();
+        // Database.GetUsers();
+        
+        Database.GetUserById(1);
+            
         Console.WriteLine("Everything Work");
+        
     }
 }

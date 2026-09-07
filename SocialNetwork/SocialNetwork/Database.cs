@@ -1,6 +1,7 @@
 using Npgsql;
-
 namespace SocialNetwork;
+
+
 
 public class Database
 {
@@ -88,12 +89,32 @@ public class Database
             string username = reader.GetString(1);
             string firstname = reader.GetString(2);
             string lastname = reader.GetString(3);
-            
+
             Console.WriteLine($"{userId}: {username} - {firstname} - {lastname}");
         }
+    }
+
+
+    public static void GetUserById(int userId)
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+                                  SELECT UserId, Username, FirstName, LastName
+                                  FROM Users
+                                  WHERE UserId = @userId;
+                                  """;
+
+        command.Parameters.AddWithValue("@userId", userId);
+
+
+        using var reader = command.ExecuteReader();
         
-        
-        
-        
+        if (reader.Read())
+        {
+            Console.WriteLine($"{reader.GetInt32(0)}: {reader.GetString(1)} - {reader.GetString(2)} - {reader.GetString(3)}");
+        }
+        else { Console.WriteLine("User not found ( "); }
     }
 }
