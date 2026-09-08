@@ -34,24 +34,28 @@ class Program
         
         // Database.AddFriendshipPair(1, 4);
 
-        Database.EnsureSchema();
-
-        int currentUsaerid = 1;
         
-        string friendUsername = "odyssey";
-
-        int? friendUserId = Database.GetUserIdByUsername(friendUsername);
-
-        if (friendUserId == null)
-        {
-            Console.WriteLine("User not found");
-            return;
-        }
-        else { Database.AddFriendshipPair(currentUsaerid,friendUserId.Value);}
         
-        Console.WriteLine("Friendship created");
+        // Database.EnsureSchema();
+        //
+        // int currentUsaerid = 1;
+        //
+        // string friendUsername = "odyssey";
+        //
+        // int? friendUserId = Database.GetUserIdByUsername(friendUsername);
+        //
+        // if (friendUserId == null)
+        // {
+        //     Console.WriteLine("User not found");
+        //     return;
+        // }
+        // else { Database.AddFriendshipPair(currentUsaerid,friendUserId.Value);}
+        //
+        // Console.WriteLine("Friendship created");
+        //
+        // Console.WriteLine("Project successfully working");
         
-        Console.WriteLine("Project successfully working");
         
+        Database.ListFriends(1);
     }
 }

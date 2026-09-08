@@ -243,4 +243,38 @@ public class Database
             throw;
         }
     }
+
+
+
+    public static void ListFriends(int userId)
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+                                 SELECT u.UserId,
+                                        u.Username,
+                                        u.FirstName,
+                                        u.LastName
+                                 FROM Friends f
+                                 INNER JOIN Users u
+                                    ON f.FriendUserId = u.UserId
+                                 WHERE f.UserId = @userId
+                                 """;
+
+        command.Parameters.AddWithValue("@userId",userId);
+
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            int friendId = reader.GetInt32(0);
+            string username = reader.GetString(1);
+            string firstName = reader.GetString(2);
+            string lastName = reader.GetString(3);
+            
+            Console.WriteLine($"{friendId}: {username} - {firstName} {lastName}");
+
+        }
+    }
 }
