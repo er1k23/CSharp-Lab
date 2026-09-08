@@ -38,9 +38,9 @@ class Program
         
         // Database.EnsureSchema();
         //
-        // int currentUsaerid = 1;
+        // int currentUsaerid = 4;
         //
-        // string friendUsername = "odyssey";
+        // string friendUsername = "Tomik";
         //
         // int? friendUserId = Database.GetUserIdByUsername(friendUsername);
         //
@@ -56,6 +56,8 @@ class Program
         // Console.WriteLine("Project successfully working");
         
         
-        Database.ListFriends(1);
+        // Database.ListFriends(1);
+        
+        Database.ListUsers(1);
     }
 }

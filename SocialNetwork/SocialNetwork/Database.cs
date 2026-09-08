@@ -277,4 +277,45 @@ public class Database
 
         }
     }
+
+
+
+    public static void ListUsers(int userId)
+    {
+        using var connection = Open();
+        using var command = connection.CreateCommand();
+
+        command.CommandText = """
+                              SELECT u.UserId,
+                                      u.Username,
+                                      u.FirstName,
+                                      u.LastName,
+                              CASE 
+                                  WHEN f.FriendUserId IS NOT NULL THEN 'Friend'
+                                  ELSE 'NOT FRIEND'
+                              END AS FriendshipStatus
+                              FROM Users u
+                              LEFT JOIN Friends f
+                                  ON f.FriendUserId = u.UserId
+                                  AND f.UserId = @userId
+                              
+                              """;
+
+        command.Parameters.AddWithValue("@userId",userId);
+
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            int userIdFromDatabase = reader.GetInt32(0);
+            string username = reader.GetString(1);
+            string firstName = reader.GetString(2);
+            string lastName = reader.GetString(3);
+            string friendshipStatus = reader.GetString(4);
+            
+            Console.WriteLine($"{userIdFromDatabase}: {username} - {firstName} {lastName} {friendshipStatus}");
+
+        }
+
+    }
 }
