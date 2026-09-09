@@ -58,6 +58,8 @@ class Program
         
         // Database.ListFriends(1);
         
-        Database.ListUsers(1);
+        // Database.ListUsers(1);
+        
+        Database.AddFriendshipPair(1,4);
     }
 }

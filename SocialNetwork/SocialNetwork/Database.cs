@@ -237,11 +237,18 @@ public class Database
 
             transaction.Commit();
         }
-        catch
+        catch (PostgresException ex)
         {
             transaction.Rollback();
-            throw;
+
+            if (ex.SqlState == "23505" && ex.ConstraintName == "pk_friends")
+            {
+                Console.WriteLine("User is already your friend.");
+                return;
+            }
+            else { throw; }
         }
+        
     }
 
 
