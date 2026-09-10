@@ -6,60 +6,30 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Database.EnsureSchema();
+       
+        Console.Write("Username: ");
+        string? username = Console.ReadLine();
+        
+        Console.Write("Password: ");
+        string? password = Console.ReadLine();
+        string? passwordHash = PasswordHasher.Hash(password!);
 
-        // Database.InsertUser(            
-        //     "odyssey",
-        //     "pas123",
-        //     "Matt",
-        //     "Damon",
-        //     "1970-10-11");
+        //
+        // Console.Write("First Name: ");
+        // string? firstName = Console.ReadLine();
+        //
+        // Console.Write("Last Name: ");
+        // string? lastName = Console.ReadLine();
+        //
+        // Console.Write("Date of birth:: ");
+        // string? dateOfBirth = Console.ReadLine();
+        
+        Console.WriteLine($"You entered: {username}");
+        Console.WriteLine($"You entered: {password}");
+        Console.WriteLine($"Hash: {passwordHash}");
+        // Console.WriteLine($"You entered: {firstName}");
+        // Console.WriteLine($"You entered: {lastName}");
+        // Console.WriteLine($"You entered: {dateOfBirth}");
 
-        // Database.GetUsers();
-        
-        
-        // Database.GetUserById(1);
-
-        // Database.GetUserById(4);
-        // Database.UpdateUser(userId:4,firstName:"Tom",lastName:"Holland");
-        // Database.GetUserById(4);
-
-        
-        // Database.DeleteUser(3);
-        
-        
-        // int? userId = Database.GetUserIdByUsername("bob");
-        //
-        // Console.WriteLine($"Bob ID: {userId}");
-        
-        // Database.AddFriendshipPair(1, 4);
-
-        
-        
-        // Database.EnsureSchema();
-        //
-        // int currentUsaerid = 4;
-        //
-        // string friendUsername = "Tomik";
-        //
-        // int? friendUserId = Database.GetUserIdByUsername(friendUsername);
-        //
-        // if (friendUserId == null)
-        // {
-        //     Console.WriteLine("User not found");
-        //     return;
-        // }
-        // else { Database.AddFriendshipPair(currentUsaerid,friendUserId.Value);}
-        //
-        // Console.WriteLine("Friendship created");
-        //
-        // Console.WriteLine("Project successfully working");
-        
-        
-        // Database.ListFriends(1);
-        
-        // Database.ListUsers(1);
-        
-        Database.AddFriendshipPair(1,4);
     }
 }
