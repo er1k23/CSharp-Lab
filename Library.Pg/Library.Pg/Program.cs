@@ -1,6 +1,7 @@
 ﻿using Library.Pg.Data;
 using Library.Pg.Models;
 using Library.Pg.Queries;
+using Library.Pg.Operations;
 
 namespace Library.Pg;
 
@@ -82,6 +83,8 @@ class Program
         
         Console.WriteLine("Books seeded successfully.");
 
-        BookQueries.RunAll(context);
+        // BookQueries.RunAll(context);
+        
+        BookOperations.RunAll(context);
     }
 }

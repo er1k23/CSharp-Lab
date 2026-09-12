@@ -20,5 +20,6 @@ public class LibraryContext: DbContext
             LogLevel.Information,
             DbContextLoggerOptions.SingleLine);
 
-        optionsBuilder.EnableSensitiveDataLogging();    }
+        optionsBuilder.EnableSensitiveDataLogging();
+    }
 }
