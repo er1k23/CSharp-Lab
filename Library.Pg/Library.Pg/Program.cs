@@ -78,7 +78,41 @@ class Program
         
         context.Books.AddRange(books);
         context.SaveChanges();
+        
         Console.WriteLine("Books seeded successfully.");
+
+
+        var allBooks = context.Books.ToList();
+
+        foreach (var book in allBooks)
+        {
+            Console.WriteLine($"{book.BookId}: {book.Title} - {book.Author}");
+        }
+
+        var unreadBooks = context.Books.Where(book => !book.IsRead).ToList();
+
+        foreach (var book in unreadBooks)
+        {
+            Console.WriteLine($"{book.BookId}: {book.Title}");
+        }
+
+
+        var fowlerBooks = context.Books
+            .Where(book => book.Author == "Martin Fowler")
+            .ToList();
+
+        foreach (var book in fowlerBooks)
+        {
+            Console.WriteLine($"{book.BookId}: {book.Title} - {book.Author}");
+        }
+
+        var mostExpensiveBook = context.Books
+            .OrderByDescending(book => book.Price)
+            .First();
+
+        Console.WriteLine(
+            $"Most expensive: {mostExpensiveBook.Title} - {mostExpensiveBook.Price}"
+        );
 
     }
 }
