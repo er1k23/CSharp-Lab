@@ -1,5 +1,6 @@
 ﻿using Library.Pg.Data;
 using Library.Pg.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Library.Pg;
 
@@ -145,9 +146,42 @@ class Program
         foreach (var book in pagedBooks)
         {
             Console.WriteLine($"{book.BookId}: {book.Title}");
-        }        
+        }
+
+
+        var bookByFind = context.Books.Find(1);
+
+        Console.WriteLine(
+            $"Find: {bookByFind?.Title}"
+        );
+
+        var bookByFirst = context.Books
+            .First(book => book.BookId == 1);
+
+        Console.WriteLine(
+            $"First: {bookByFirst.Title}"
+        );
+
+
+        var totalPrice = context.Books
+            .Sum(book => book.Price);
+
+        Console.WriteLine($"Total price: {totalPrice}");
+
         
-        
-        
+        var bookWithCode = context.Books.Where(book => book.Title.Contains("Code")).ToList();
+
+        foreach (var book in bookWithCode)
+        {
+            Console.WriteLine($"Contains: {book.Title}");
+        }
+
+        var booksWithCodeInsensitive = context.Books.
+            Where(book => EF.Functions.ILike(book.Title, "%code%")).ToList();
+
+        foreach (var book in booksWithCodeInsensitive)
+        {
+            Console.WriteLine($"ILike: {book.Title}");
+        }
     }
 }
