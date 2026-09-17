@@ -17,4 +17,10 @@ public class JobsController : ControllerBase
     {
         return Ok($"Job with id {id}");
     }
+    
+    [HttpGet("search")]
+    public IActionResult SearchJobs(string? title)
+    {
+        return Ok($"Searching for: {title}");
+    }
 }
