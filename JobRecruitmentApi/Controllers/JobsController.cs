@@ -11,4 +11,10 @@ public class JobsController : ControllerBase
     {
         return Ok("Jobs endpoint works!");
     }
+    
+    [HttpGet("{id}")]
+    public IActionResult GetJob(int id)
+    {
+        return Ok($"Job with id {id}");
+    }
 }
