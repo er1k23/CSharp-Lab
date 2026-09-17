@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-
+using JobRecruitmentApi.Models;
 namespace JobRecruitmentApi.Controllers;
 
 [ApiController]
@@ -13,14 +13,20 @@ public class JobsController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public IActionResult GetJob(int id)
+    public IActionResult GetJob([FromRoute] int id)
     {
         return Ok($"Job with id {id}");
     }
     
     [HttpGet("search")]
-    public IActionResult SearchJobs(string? title)
+    public IActionResult SearchJobs([FromQuery] string? title)
     {
         return Ok($"Searching for: {title}");
+    }
+
+    [HttpPost]
+    public IActionResult CreateJob([FromBody] CreateJobRequest request)
+    {
+        return Ok(request);
     }
 }
