@@ -27,6 +27,17 @@ public class JobsController : ControllerBase
     [HttpPost]
     public IActionResult CreateJob([FromBody] CreateJobRequest request)
     {
-        return Ok(request);
+        var jobId = 101;
+
+        return CreatedAtAction(
+            nameof(GetJob),
+            new { id = jobId },
+            new
+            {
+                id = jobId,
+                request.Title,
+                request.Description,
+                request.Salary
+            });
     }
 }
