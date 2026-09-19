@@ -1,23 +1,42 @@
-using Microsoft.AspNetCore.Mvc;
+using JobRecruitmentApi.Data;
 using JobRecruitmentApi.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
 namespace JobRecruitmentApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class JobsController : ControllerBase
 {
+    private readonly ApplicationDbContext _context;
+
+    public JobsController(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
-    public IActionResult GetJobs()
+    public async Task<IActionResult> GetJobs()
     {
-        return Ok("Jobs endpoint works!");
+        var jobs = await _context.Jobs.ToListAsync();
+
+        return Ok(jobs);
     }
-    
+
     [HttpGet("{id}")]
-    public IActionResult GetJob([FromRoute] int id)
+    public async Task<IActionResult> GetJob([FromRoute] int id)
     {
-        return Ok($"Job with id {id}");
+        var job = await _context.Jobs.FindAsync(id);
+
+        if (job is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(job);
     }
-    
+
     [HttpGet("search")]
     public IActionResult SearchJobs([FromQuery] string? title)
     {
@@ -25,21 +44,21 @@ public class JobsController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreateJob([FromBody] CreateJobRequest request)
+    public async Task<IActionResult> CreateJob([FromBody] CreateJobRequest request)
     {
-        var jobId = 101;
+        var job = new Job
+        {
+            Title = request.Title,
+            Description = request.Description,
+            Salary = request.Salary
+        };
+
+        _context.Jobs.Add(job);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(
             nameof(GetJob),
-            new { id = jobId },
-            new
-            {
-                id = jobId,
-                request.Title,
-                request.Description,
-                request.Salary
-            });
+            new { id = job.Id },
+            job);
     }
-    
-    
 }
