@@ -1,5 +1,6 @@
 using JobRecruitmentApi.Data;
 using Microsoft.EntityFrameworkCore;
+using JobRecruitmentApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IJobService, JobService>();
 
 var app = builder.Build();
 

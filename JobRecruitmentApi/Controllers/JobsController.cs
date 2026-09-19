@@ -1,7 +1,6 @@
-using JobRecruitmentApi.Data;
 using JobRecruitmentApi.Models;
+using JobRecruitmentApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace JobRecruitmentApi.Controllers;
 
@@ -9,17 +8,17 @@ namespace JobRecruitmentApi.Controllers;
 [Route("api/[controller]")]
 public class JobsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IJobService _jobService;
 
-    public JobsController(ApplicationDbContext context)
+    public JobsController(IJobService jobService)
     {
-        _context = context;
+        _jobService = jobService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetJobs()
     {
-        var jobs = await _context.Jobs.ToListAsync();
+        var jobs = await _jobService.GetJobsAsync();
 
         return Ok(jobs);
     }
@@ -27,7 +26,7 @@ public class JobsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetJob([FromRoute] int id)
     {
-        var job = await _context.Jobs.FindAsync(id);
+        var job = await _jobService.GetJobByIdAsync(id);
 
         if (job is null)
         {
@@ -44,17 +43,10 @@ public class JobsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateJob([FromBody] CreateJobRequest request)
+    public async Task<IActionResult> CreateJob(
+        [FromBody] CreateJobRequest request)
     {
-        var job = new Job
-        {
-            Title = request.Title,
-            Description = request.Description,
-            Salary = request.Salary
-        };
-
-        _context.Jobs.Add(job);
-        await _context.SaveChangesAsync();
+        var job = await _jobService.CreateJobAsync(request);
 
         return CreatedAtAction(
             nameof(GetJob),
