@@ -86,4 +86,21 @@ public class JobService : IJobService
 
         return job;
     }
+
+
+    public async Task<bool> DeleteJobAsync(int id)
+    {
+        var job = await _context.Jobs.FindAsync(id);
+
+        if (job is null)
+        {
+            return false;
+        }
+
+        _context.Jobs.Remove(job);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }

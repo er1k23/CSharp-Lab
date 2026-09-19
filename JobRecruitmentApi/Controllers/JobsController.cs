@@ -79,4 +79,17 @@ public class JobsController : ControllerBase
 
         return Ok(job);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteJobAsync([FromRoute] int id)
+    {
+        var deleted = await _jobService.DeleteJobAsync(id);
+
+        if (!deleted)
+        {
+            return NotFound();
+        }
+        
+        return NoContent();
+    }
 }
