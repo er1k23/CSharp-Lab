@@ -15,4 +15,6 @@ public interface IJobService
     Task<Job?> PatchJobAsync(int id, PatchJobRequest request);
     
     Task<bool> DeleteJobAsync(int id);
+
+    Task<List<Job>> SearchJobsAsync(string? title);
 }

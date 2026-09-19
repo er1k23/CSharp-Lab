@@ -103,4 +103,16 @@ public class JobService : IJobService
 
         return true;
     }
+    
+    public async Task<List<Job>> SearchJobsAsync(string? title)
+    {
+        var query =  _context.Jobs.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            query = query.Where(job => job.Title.Contains(title));
+        }
+
+        return await query.ToListAsync();
+    }
 }

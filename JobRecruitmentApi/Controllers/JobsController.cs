@@ -37,9 +37,11 @@ public class JobsController : ControllerBase
     }
 
     [HttpGet("search")]
-    public IActionResult SearchJobs([FromQuery] string? title)
+    public async Task<IActionResult> SearchJobs([FromQuery] string? title)
     {
-        return Ok($"Searching for: {title}");
+        var job = await _jobService.SearchJobsAsync(title);
+        
+        return Ok(job);
     }
 
     [HttpPost]
