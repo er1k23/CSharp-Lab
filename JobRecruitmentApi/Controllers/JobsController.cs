@@ -53,4 +53,17 @@ public class JobsController : ControllerBase
             new { id = job.Id },
             job);
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateJob([FromRoute] int id, [FromBody] UpdateJobRequest request)
+    {
+        var job = await _jobService.UpdateJobAsync(id, request);
+        
+        if (job is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(job);
+    }
 }

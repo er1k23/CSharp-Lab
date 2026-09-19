@@ -38,4 +38,23 @@ public class JobService : IJobService
 
         return job;
     }
+
+    public async Task<Job?> UpdateJobAsync(int id, UpdateJobRequest request)
+    {
+
+        var job = await _context.Jobs.FindAsync(id);
+
+        if (job is null)
+        {
+            return null;
+        }
+
+        job.Title = request.Title;
+        job.Description = request.Description;
+        job.Salary = request.Salary;
+
+        await _context.SaveChangesAsync();
+
+        return job;
+    }
 }

@@ -9,4 +9,6 @@ public interface IJobService
     Task<Job?> GetJobByIdAsync(int id);
 
     Task<Job> CreateJobAsync(CreateJobRequest request);
+    
+    Task<Job?> UpdateJobAsync(int id, UpdateJobRequest request);
 }
