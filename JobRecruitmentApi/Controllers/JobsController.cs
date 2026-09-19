@@ -66,4 +66,17 @@ public class JobsController : ControllerBase
 
         return Ok(job);
     }
+
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> PatchJob([FromRoute] int id, [FromBody] PatchJobRequest request)
+    {
+        var job = await _jobService.PatchJobAsync(id, request);
+
+        if (job is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(job);
+    }
 }

@@ -11,4 +11,6 @@ public interface IJobService
     Task<Job> CreateJobAsync(CreateJobRequest request);
     
     Task<Job?> UpdateJobAsync(int id, UpdateJobRequest request);
+
+    Task<Job?> PatchJobAsync(int id, PatchJobRequest request);
 }

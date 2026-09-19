@@ -57,4 +57,33 @@ public class JobService : IJobService
 
         return job;
     }
+
+    public async Task<Job?> PatchJobAsync(int id, PatchJobRequest request)
+    {
+        var job = await _context.Jobs.FindAsync(id);
+
+        if (job is null)
+        {
+            return null;
+        }
+
+        if (request.Title is not null)
+        {
+            job.Title = request.Title;
+        }
+
+        if (request.Description is not null)
+        {
+            job.Description = request.Description;
+        }
+
+        if (request.Salary is not null)
+        {
+            job.Salary = request.Salary.Value;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return job;
+    }
 }
