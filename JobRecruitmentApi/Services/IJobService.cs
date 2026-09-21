@@ -4,17 +4,17 @@ namespace JobRecruitmentApi.Services;
 
 public interface IJobService
 {
-    Task<List<Job>> GetJobsAsync();
+    Task<List<JobResponse>> GetJobsAsync();
 
-    Task<Job?> GetJobByIdAsync(int id);
+    Task<JobResponse?> GetJobByIdAsync(int id);
 
-    Task<Job> CreateJobAsync(CreateJobRequest request);
+    Task<JobResponse> CreateJobAsync(CreateJobRequest request);
     
-    Task<Job?> UpdateJobAsync(int id, UpdateJobRequest request);
+    Task<JobResponse?> UpdateJobAsync(int id, UpdateJobRequest request);
 
-    Task<Job?> PatchJobAsync(int id, PatchJobRequest request);
+    Task<JobResponse?> PatchJobAsync(int id, PatchJobRequest request);
     
     Task<bool> DeleteJobAsync(int id);
 
-    Task<List<Job>> SearchJobsAsync(string? title);
+    Task<List<JobResponse>> SearchJobsAsync(string? title);
 }

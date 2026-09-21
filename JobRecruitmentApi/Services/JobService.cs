@@ -13,17 +13,31 @@ public class JobService : IJobService
         _context = context;
     }
 
-    public async Task<List<Job>> GetJobsAsync()
+    private static JobResponse ToResponse(Job job)
     {
-        return await _context.Jobs.ToListAsync();
+        return new JobResponse
+        {
+            Id = job.Id,
+            Title = job.Title,
+            Description = job.Description,
+            Salary = job.Salary
+        };
+    }
+    
+    
+    public async Task<List<JobResponse>> GetJobsAsync()
+    {
+        var jobs =  await _context.Jobs.AsNoTracking().ToListAsync();
+        return jobs.Select(ToResponse).ToList();
     }
 
-    public async Task<Job?> GetJobByIdAsync(int id)
+    public async Task<JobResponse?> GetJobByIdAsync(int id)
     {
-        return await _context.Jobs.FindAsync(id);
+        var job = await _context.Jobs.FindAsync(id);
+        return job is null ? null : ToResponse(job);
     }
 
-    public async Task<Job> CreateJobAsync(CreateJobRequest request)
+    public async Task<JobResponse> CreateJobAsync(CreateJobRequest request)
     {
         var job = new Job
         {
@@ -36,10 +50,10 @@ public class JobService : IJobService
 
         await _context.SaveChangesAsync();
 
-        return job;
+        return ToResponse(job);
     }
 
-    public async Task<Job?> UpdateJobAsync(int id, UpdateJobRequest request)
+    public async Task<JobResponse?> UpdateJobAsync(int id, UpdateJobRequest request)
     {
 
         var job = await _context.Jobs.FindAsync(id);
@@ -55,10 +69,10 @@ public class JobService : IJobService
 
         await _context.SaveChangesAsync();
 
-        return job;
+        return ToResponse(job);
     }
 
-    public async Task<Job?> PatchJobAsync(int id, PatchJobRequest request)
+    public async Task<JobResponse?> PatchJobAsync(int id, PatchJobRequest request)
     {
         var job = await _context.Jobs.FindAsync(id);
 
@@ -84,7 +98,7 @@ public class JobService : IJobService
 
         await _context.SaveChangesAsync();
 
-        return job;
+        return ToResponse(job);
     }
 
 
@@ -104,15 +118,16 @@ public class JobService : IJobService
         return true;
     }
     
-    public async Task<List<Job>> SearchJobsAsync(string? title)
+    public async Task<List<JobResponse>> SearchJobsAsync(string? title)
     {
-        var query =  _context.Jobs.AsQueryable();
+        var query =  _context.Jobs.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(title))
         {
             query = query.Where(job => job.Title.Contains(title));
         }
 
-        return await query.ToListAsync();
+        var jobs = await query.ToListAsync();
+        return jobs.Select(ToResponse).ToList();
     }
 }
