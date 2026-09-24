@@ -39,4 +39,25 @@ public class AuthController : ControllerBase
             userName = user.UserName
         });
     }
+
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] RegisterRequest request)
+    {
+        var user = await _authService.LoginAsync(request.UserName, request.Password);
+
+        if (user is null)
+        {
+            return BadRequest(new
+            {
+                message = "Invalid username or passowrd."
+            });
+        }
+
+        return Ok(new
+        {
+            userId = user.Id,
+            userName = user.UserName
+        });
+    }
 }

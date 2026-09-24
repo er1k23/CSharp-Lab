@@ -16,6 +16,7 @@ public class AuthService: IAuthService
         _passwordHasher = passwordHasher;
     }
 
+    
     public async Task<User?> RegisterAsync(string userName, string password)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(user => user.UserName == userName);
@@ -35,6 +36,25 @@ public class AuthService: IAuthService
         _context.Users.Add(user);
 
         await _context.SaveChangesAsync();
+
+        return user;
+    }
+
+    public async Task<User?> LoginAsync(string userName, string password)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == userName);
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+
+        if (result == PasswordVerificationResult.Failed)
+        {
+            return null;
+        }
 
         return user;
     }
