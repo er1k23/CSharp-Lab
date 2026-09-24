@@ -1,8 +1,13 @@
+using JobRecruitmentApi.Authentication;
 using JobRecruitmentApi.Data;
 using JobRecruitmentApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using JobRecruitmentApi.Middleware;
+using Microsoft.AspNetCore.Identity;
+using JobRecruitmentApi.Authentication;
+using JobRecruitmentApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +23,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IJobService, JobService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
