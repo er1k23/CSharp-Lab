@@ -9,4 +9,8 @@ public class Job
     public string Description { get; set; } = string.Empty;
 
     public decimal Salary { get; set; }
+    
+    public int OwnerId { get; set; }
+    
+    public User? Owner { get; set; }
 }

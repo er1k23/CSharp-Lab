@@ -1,6 +1,7 @@
 using JobRecruitmentApi.Models;
 using JobRecruitmentApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using JobRecruitmentApi.Extensions;
 
 namespace JobRecruitmentApi.Controllers;
 
