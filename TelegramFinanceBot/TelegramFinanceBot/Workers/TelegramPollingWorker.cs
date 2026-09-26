@@ -79,6 +79,24 @@ public class TelegramPollingWorker : BackgroundService
                 "Responded to /start in chat 😎 {ChatId}",
                 chatId);
         }
+
+        if (messageText == "/expenses")
+        {
+            using var scope = _scopeFactory.CreateScope();
+
+            var expenseService = scope.ServiceProvider
+                .GetRequiredService<IExpenseService>();
+
+            var expenses = expenseService.GetExpenses();
+
+            await botClient.SendMessage(
+                chatId: chatId,
+                text: $"You have {expenses.Count} expenses.",
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+        
         else
         {
             string[] parts = messageText.Split(' ');

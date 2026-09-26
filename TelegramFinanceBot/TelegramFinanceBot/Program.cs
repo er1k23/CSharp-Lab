@@ -21,7 +21,7 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
     return new TelegramBotClient(telegramOptions.BotToken);
 });
 
-builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddSingleton<IExpenseService, ExpenseService>();
 
 builder.Services.AddHostedService<TelegramPollingWorker>();
 

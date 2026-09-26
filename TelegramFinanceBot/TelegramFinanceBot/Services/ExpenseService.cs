@@ -5,6 +5,9 @@ namespace TelegramFinanceBot.Services;
 
 public class ExpenseService : IExpenseService
 {
+
+    private readonly List<Expense> _expenses = new();
+    
     public Expense CreateExpense(int amount, string currency, string category)
     {
         var expense = new Expense
@@ -13,6 +16,14 @@ public class ExpenseService : IExpenseService
             Currency = currency,
             Category = category
         };
+        
+        _expenses.Add(expense);
+        
         return expense;
+    }
+
+    public List<Expense> GetExpenses()
+    {
+        return _expenses;
     }
 }
