@@ -87,11 +87,12 @@ public class TelegramPollingWorker : BackgroundService
             var expenseService = scope.ServiceProvider
                 .GetRequiredService<IExpenseService>();
 
-            var expenses = expenseService.GetExpenses();
+            var expenses = await expenseService.GetExpensesAsync();
 
             await botClient.SendMessage(
                 chatId: chatId,
-                text: $"You have {expenses.Count} expenses.",
+                text: string.Join("\n", expenses.Select(expense =>
+                    $"{expense.Amount} {expense.Currency} - {expense.Category}")),
                 cancellationToken: cancellationToken);
 
             return;
@@ -105,7 +106,7 @@ public class TelegramPollingWorker : BackgroundService
             {
                 await botClient.SendMessage(
                     chatId: chatId,
-                    text: "Please use format: 1500 AMD food",
+                    text: "Please use format: (Amount) AMD (Category)",
                     cancellationToken: cancellationToken);
 
                 return;
@@ -138,7 +139,7 @@ public class TelegramPollingWorker : BackgroundService
             var expenseService = scope.ServiceProvider
                 .GetRequiredService<IExpenseService>();
 
-            var expense = expenseService.CreateExpense(
+            var expense = await expenseService.CreateExpenseAsync(
                 amount,
                 parts[1],
                 category);

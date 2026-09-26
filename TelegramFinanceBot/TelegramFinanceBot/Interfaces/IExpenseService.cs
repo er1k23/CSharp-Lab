@@ -4,7 +4,10 @@ namespace TelegramFinanceBot.Interfaces;
 
 public interface IExpenseService
 {
-    Expense CreateExpense(int amount, string currency, string category);
+    Task<Expense> CreateExpenseAsync(
+        int amount,
+        string currency,
+        string category);
 
-    List<Expense> GetExpenses();
+    Task<List<Expense>> GetExpensesAsync();
 }

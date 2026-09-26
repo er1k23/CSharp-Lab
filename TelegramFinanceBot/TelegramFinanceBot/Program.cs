@@ -4,13 +4,17 @@ using TelegramFinanceBot.Workers;
 using Microsoft.Extensions.Options;
 using TelegramFinanceBot.Interfaces;
 using TelegramFinanceBot.Services;
-using TelegramFinanceBot.Interfaces;
-using TelegramFinanceBot.Services;
+using Microsoft.EntityFrameworkCore;
+using TelegramFinanceBot.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<TelegramOptions>(
     builder.Configuration.GetSection(TelegramOptions.SectionName));
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
 {
@@ -21,7 +25,7 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
     return new TelegramBotClient(telegramOptions.BotToken);
 });
 
-builder.Services.AddSingleton<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 builder.Services.AddHostedService<TelegramPollingWorker>();
 
