@@ -1,21 +1,25 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using TelegramFinanceBot.Configuration;
-using TelegramFinanceBot.Workers;
-using Microsoft.Extensions.Options;
+using TelegramFinanceBot.Data;
 using TelegramFinanceBot.Interfaces;
 using TelegramFinanceBot.Services;
-using Microsoft.EntityFrameworkCore;
-using TelegramFinanceBot.Data;
+using TelegramFinanceBot.Workers;
 
-var builder = WebApplication.CreateBuilder(args);
 
+var builder = Host.CreateApplicationBuilder(args);
+
+// Telegram configuration
 builder.Services.Configure<TelegramOptions>(
     builder.Configuration.GetSection(TelegramOptions.SectionName));
 
+// PostgreSQL and EF Core
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Telegram Bot
 builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
 {
     var telegramOptions = serviceProvider
@@ -25,46 +29,13 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
     return new TelegramBotClient(telegramOptions.BotToken);
 });
 
+// Expense service
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
+// Background worker
 builder.Services.AddHostedService<TelegramPollingWorker>();
-
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
 
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
-
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+await app.RunAsync();
