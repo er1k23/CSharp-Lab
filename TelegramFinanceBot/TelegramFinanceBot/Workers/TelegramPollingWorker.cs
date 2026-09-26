@@ -1,23 +1,28 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TelegramFinanceBot.Models;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramFinanceBot.Interfaces;
 
 namespace TelegramFinanceBot.Workers;
 
 public class TelegramPollingWorker : BackgroundService
 {
     private readonly ITelegramBotClient _botClient;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<TelegramPollingWorker> _logger;
 
     public TelegramPollingWorker(
         ITelegramBotClient botClient,
-        ILogger<TelegramPollingWorker> logger)
+        ILogger<TelegramPollingWorker> logger,
+        IServiceScopeFactory scopeFactory)
     {
         _botClient = botClient;
         _logger = logger;
+        _scopeFactory = scopeFactory;
     }
 
     protected override async Task ExecuteAsync(
@@ -76,9 +81,53 @@ public class TelegramPollingWorker : BackgroundService
         }
         else
         {
+            string[] parts = messageText.Split(' ');
+
+            if (parts.Length < 3)
+            {
+                await botClient.SendMessage(
+                    chatId: chatId,
+                    text: "Please use format: 1500 AMD food",
+                    cancellationToken: cancellationToken);
+
+                return;
+            }
+
+            if (!int.TryParse(parts[0], out int amount))
+            {
+                await botClient.SendMessage(
+                    chatId: chatId,
+                    text: "Invalid amount. Please enter a number.",
+                    cancellationToken: cancellationToken);
+
+                return;
+            }
+
+            if (amount <= 0)
+            {
+                await botClient.SendMessage(
+                    chatId: chatId,
+                    text: "Amount must be greater than zero.",
+                    cancellationToken: cancellationToken);
+                
+                return;
+            }
+            
+            string category = parts[2];
+
+            using var scope = _scopeFactory.CreateScope();
+
+            var expenseService = scope.ServiceProvider
+                .GetRequiredService<IExpenseService>();
+
+            var expense = expenseService.CreateExpense(
+                amount,
+                parts[1],
+                category);
+            
             await botClient.SendMessage(
                 chatId: chatId,
-                text: "Hello 👋 Send /start to start using your finance bot.",
+                text: $"Amount: {expense.Amount} {expense.Currency}, Category: {expense.Category}",
                 cancellationToken: cancellationToken);
         }
     }

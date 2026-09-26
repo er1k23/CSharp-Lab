@@ -2,6 +2,10 @@ using Telegram.Bot;
 using TelegramFinanceBot.Configuration;
 using TelegramFinanceBot.Workers;
 using Microsoft.Extensions.Options;
+using TelegramFinanceBot.Interfaces;
+using TelegramFinanceBot.Services;
+using TelegramFinanceBot.Interfaces;
+using TelegramFinanceBot.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +20,8 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
 
     return new TelegramBotClient(telegramOptions.BotToken);
 });
+
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 builder.Services.AddHostedService<TelegramPollingWorker>();
 
