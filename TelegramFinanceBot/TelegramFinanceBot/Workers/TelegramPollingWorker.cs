@@ -6,6 +6,8 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramFinanceBot.Interfaces;
+using TelegramFinanceBot.Commands;
+using TelegramFinanceBot.Interfaces;
 
 namespace TelegramFinanceBot.Workers;
 
@@ -66,89 +68,44 @@ public class TelegramPollingWorker : BackgroundService
             return;
         }
 
-        var chatId = message.Chat.Id;
+        using var scope = _scopeFactory.CreateScope();
 
-        if (messageText == "/start")
+        var handlers = scope.ServiceProvider
+            .GetServices<ICommandHandler>();
+
+        ICommandHandler? handler;
+
+        if (messageText.StartsWith("/"))
         {
-            await botClient.SendMessage(
-                chatId: chatId,
-                text: "Welcome 🤗 Your finance bot is running.",
-                cancellationToken: cancellationToken);
+            handler = handlers.FirstOrDefault(
+                h => h.Command == messageText);
 
-            _logger.LogInformation(
-                "Responded to /start in chat 😎 {ChatId}",
-                chatId);
+            if (handler is null)
+            {
+                await botClient.SendMessage(
+                    chatId: message.Chat.Id,
+                    text: "Unknown command. Use /help to see available commands.",
+                    cancellationToken: cancellationToken);
+
+                return;
+            }
         }
-
-        if (messageText == "/expenses")
-        {
-            using var scope = _scopeFactory.CreateScope();
-
-            var expenseService = scope.ServiceProvider
-                .GetRequiredService<IExpenseService>();
-
-            var expenses = await expenseService.GetExpensesAsync();
-
-            await botClient.SendMessage(
-                chatId: chatId,
-                text: string.Join("\n", expenses.Select(expense =>
-                    $"{expense.Amount} {expense.Currency} - {expense.Category}")),
-                cancellationToken: cancellationToken);
-
-            return;
-        }
-        
         else
         {
-            string[] parts = messageText.Split(' ');
-
-            if (parts.Length < 3)
-            {
-                await botClient.SendMessage(
-                    chatId: chatId,
-                    text: "Please use format: (Amount) AMD (Category)",
-                    cancellationToken: cancellationToken);
-
-                return;
-            }
-
-            if (!int.TryParse(parts[0], out int amount))
-            {
-                await botClient.SendMessage(
-                    chatId: chatId,
-                    text: "Invalid amount. Please enter a number.",
-                    cancellationToken: cancellationToken);
-
-                return;
-            }
-
-            if (amount <= 0)
-            {
-                await botClient.SendMessage(
-                    chatId: chatId,
-                    text: "Amount must be greater than zero.",
-                    cancellationToken: cancellationToken);
-                
-                return;
-            }
-            
-            string category = parts[2];
-
-            using var scope = _scopeFactory.CreateScope();
-
-            var expenseService = scope.ServiceProvider
-                .GetRequiredService<IExpenseService>();
-
-            var expense = await expenseService.CreateExpenseAsync(
-                amount,
-                parts[1],
-                category);
-            
-            await botClient.SendMessage(
-                chatId: chatId,
-                text: $"Amount: {expense.Amount} {expense.Currency}, Category: {expense.Category}",
-                cancellationToken: cancellationToken);
+            handler = handlers.FirstOrDefault(
+                h => h.Command == CommandKeys.AddExpense);
         }
+
+        if (handler is null)
+        {
+            return;
+        }
+
+        await handler.HandleAsync(
+            botClient,
+            message,
+            cancellationToken);
+        
     }
 
     private Task HandlePollingErrorAsync(

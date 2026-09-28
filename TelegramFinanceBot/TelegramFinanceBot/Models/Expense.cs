@@ -4,6 +4,8 @@ public class Expense
 {
     public int Id { get; set; }
     
+    public long UserId { get; set; }
+    
     public int Amount { get; set; }
 
     public string Currency { get; set; } = "AMD";
