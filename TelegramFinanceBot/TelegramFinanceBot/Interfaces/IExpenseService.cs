@@ -10,5 +10,5 @@ public interface IExpenseService
         string category,
         string? note);
 
-    Task<List<Expense>> GetExpensesAsync(long userId);
+    Task<List<Expense>> GetExpensesAsync(long chatId);
 }

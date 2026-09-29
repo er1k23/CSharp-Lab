@@ -32,6 +32,8 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
 
 // Register the expense service with a scoped lifetime.
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+
 
 // Register command handlers.
 builder.Services.AddScoped<ICommandHandler, StartCommandHandler>();

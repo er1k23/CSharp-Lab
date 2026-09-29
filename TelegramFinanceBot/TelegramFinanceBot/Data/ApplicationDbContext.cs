@@ -12,4 +12,5 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Expense> Expenses { get; set; }
+    public DbSet<Chat> Chats { get; set; }
 }

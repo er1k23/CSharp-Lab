@@ -6,6 +6,14 @@ namespace TelegramFinanceBot.Commands;
 
 public class StartCommandHandler : ICommandHandler
 {
+    private readonly IChatService _chatService;
+
+    public StartCommandHandler(IChatService chatService)
+    {
+        _chatService = chatService;
+    }
+    
+    
     public string Command => CommandKeys.Start;
 
     public async Task HandleAsync(
@@ -13,6 +21,10 @@ public class StartCommandHandler : ICommandHandler
         Message message,
         CancellationToken cancellationToken)
     {
+        var chatId = message.Chat.Id;
+
+        var chat = await _chatService.RegisterChatAsync(chatId);
+        
         await botClient.SendMessage(
             chatId: message.Chat.Id,
             text: "Welcome 🤗 Your finance bot is running.",
