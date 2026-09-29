@@ -15,17 +15,18 @@ public class ExpenseService : IExpenseService
     }
 
     public async Task<Expense> CreateExpenseAsync(
-        long userId,
-        int amount,
-        string currency,
-        string category)
+        long chatId,
+        decimal amount,
+        string category,
+        string? note)
     {
         var expense = new Expense
         {
-            UserId = userId,
+            ChatId = chatId,
             Amount = amount,
-            Currency = currency,
-            Category = category
+            Category = category,
+            Note = note,
+            SpentAt = DateTime.UtcNow
         };
 
         _context.Expenses.Add(expense);
@@ -35,8 +36,10 @@ public class ExpenseService : IExpenseService
         return expense;
     }
 
-    public async Task<List<Expense>> GetExpensesAsync(long userid)
+    public async Task<List<Expense>> GetExpensesAsync(long chatId)
     {
-        return await _context.Expenses.Where(u => u.UserId == userid).ToListAsync();
+        return await _context.Expenses
+            .Where(e => e.ChatId == chatId)
+            .ToListAsync();
     }
 }

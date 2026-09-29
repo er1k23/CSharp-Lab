@@ -1,3 +1,4 @@
+using System.Globalization;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramFinanceBot.Interfaces;
@@ -22,25 +23,30 @@ public class AddExpenseCommandHandler : ICommandHandler
     {
         var messageText = message.Text!;
         var chatId = message.Chat.Id;
-        var userId = message.From!.Id;
 
-        string[] parts = messageText.Split(' ');
+        string[] parts = messageText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        if (parts.Length < 3)
+        if (parts.Length < 2)
         {
             await botClient.SendMessage(
                 chatId: chatId,
-                text: "Please use format: (Amount) AMD (Category)",
+                text: "Invalid format. Use: <amount> <category> [note]\nExample: 3310 groceries lidl milk",
                 cancellationToken: cancellationToken);
 
             return;
         }
 
-        if (!int.TryParse(parts[0], out int amount))
+        string amountText = parts[0].Replace(',', '.');
+        
+        if (!decimal.TryParse(
+                amountText,
+                NumberStyles.AllowDecimalPoint,
+                CultureInfo.InvariantCulture,
+                out decimal amount))
         {
             await botClient.SendMessage(
                 chatId: chatId,
-                text: "Invalid amount. Please enter a number.",
+                text: "Invalid amount. Please enter a number, e.g. 12.50.",
                 cancellationToken: cancellationToken);
 
             return;
@@ -56,17 +62,38 @@ public class AddExpenseCommandHandler : ICommandHandler
             return;
         }
 
-        string category = parts[2];
+        string category = parts[1];
+
+        if (!category.All(char.IsLetter))
+        {
+            await botClient.SendMessage(
+                chatId: chatId,
+                text: "Category must contain letters only.",
+                cancellationToken: cancellationToken);
+            
+            return;
+        }
+
+        category = category.ToLowerInvariant();
+
+        string? note = parts.Length > 2 ? string.Join(' ', parts.Skip(2)) : null;
 
         var expense = await _expenseService.CreateExpenseAsync(
-            userId,
+            chatId,
             amount,
-            parts[1],
-            category);
+            category,
+            note);
+        
+        string response = $"Saved: {expense.Amount:F2} AMD, Category: {expense.Category}";
 
+        if (expense.Note is not null)
+        {
+            response += $", Note: {expense.Note}";
+        }
+        
         await botClient.SendMessage(
             chatId: chatId,
-            text: $"Amount: {expense.Amount} {expense.Currency}, Category: {expense.Category}",
+            text: response,
             cancellationToken: cancellationToken);
     }
 }

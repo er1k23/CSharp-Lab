@@ -20,15 +20,37 @@ public class ExpensesCommandHandler : ICommandHandler
         Message message,
         CancellationToken cancellationToken)
     {
-        var userId = message.From!.Id;
+        var chatId = message.Chat.Id;
 
-        var expenses = await _expenseService.GetExpensesAsync(userId);
+        var expenses = await _expenseService.GetExpensesAsync(chatId);
 
-        var text = string.Join("\n", expenses.Select(expense =>
-            $"{expense.Amount} {expense.Currency} - {expense.Category}"));
+        if (expenses.Count == 0)
+        {
+            await botClient.SendMessage(
+                chatId: chatId,
+                text: "You haven't added any expenses yet.",
+                cancellationToken: cancellationToken);
+
+            return;
+        }
+
+        var text = string.Join("\n\n", expenses.Select(expense =>
+        {
+            var result =
+                $"{expense.Amount:F2} AMD - {expense.Category}";
+
+            if (!string.IsNullOrWhiteSpace(expense.Note))
+            {
+                result += $"\nNote: {expense.Note}";
+            }
+
+            result += $"\nDate: {expense.SpentAt:yyyy-MM-dd HH:mm} UTC";
+
+            return result;
+        }));
 
         await botClient.SendMessage(
-            chatId: message.Chat.Id,
+            chatId: chatId,
             text: text,
             cancellationToken: cancellationToken);
     }

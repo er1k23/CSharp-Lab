@@ -4,11 +4,13 @@ public class Expense
 {
     public int Id { get; set; }
     
-    public long UserId { get; set; }
+    public long ChatId { get; set; }
     
-    public int Amount { get; set; }
-
-    public string Currency { get; set; } = "AMD";
-
+    public decimal Amount { get; set; }
+    
     public string Category { get; set; } = "";
+    
+    public string? Note { get; set; }
+    
+    public DateTime SpentAt { get; set; }
 }
