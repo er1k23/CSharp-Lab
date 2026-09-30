@@ -40,6 +40,8 @@ builder.Services.AddScoped<IExpenseAnalyticsService, ExpenseAnalyticsService>();
 builder.Services.AddScoped<ICommandHandler, StartCommandHandler>();
 builder.Services.AddScoped<ICommandHandler, ExpensesCommandHandler>();
 builder.Services.AddScoped<ICommandHandler, AddExpenseCommandHandler>();
+builder.Services.AddScoped<ICommandHandler, TodayCommandHandler>();
+builder.Services.AddScoped<ICommandHandler, MonthCommandHandler>();
 
 // Register the background worker that receives Telegram updates.
 builder.Services.AddHostedService<TelegramPollingWorker>();
