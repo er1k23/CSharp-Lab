@@ -11,4 +11,6 @@ public static class CommandKeys
     public const string Today = "/today";
 
     public const string Month = "/month";
+
+    public const string Help = "/help";
 }

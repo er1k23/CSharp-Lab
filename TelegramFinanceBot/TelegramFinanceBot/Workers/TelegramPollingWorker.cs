@@ -1,13 +1,9 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using TelegramFinanceBot.Models;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramFinanceBot.Interfaces;
-using TelegramFinanceBot.Commands;
-using TelegramFinanceBot.Interfaces;
+
 
 namespace TelegramFinanceBot.Workers;
 
