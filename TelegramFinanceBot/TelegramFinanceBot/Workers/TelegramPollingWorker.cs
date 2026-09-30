@@ -58,54 +58,15 @@ public class TelegramPollingWorker : BackgroundService
         Update update,
         CancellationToken cancellationToken)
     {
-        if (update.Message is not { } message)
-        {
-            return;
-        }
-
-        if (message.Text is not { } messageText)
-        {
-            return;
-        }
-
         using var scope = _scopeFactory.CreateScope();
 
-        var handlers = scope.ServiceProvider
-            .GetServices<ICommandHandler>();
+        var processor = scope.ServiceProvider
+            .GetRequiredService<ITelegramUpdateProcessor>();
 
-        ICommandHandler? handler;
-
-        if (messageText.StartsWith("/"))
-        {
-            handler = handlers.FirstOrDefault(
-                h => h.Command == messageText);
-
-            if (handler is null)
-            {
-                await botClient.SendMessage(
-                    chatId: message.Chat.Id,
-                    text: "Unknown command. Use /help to see available commands.",
-                    cancellationToken: cancellationToken);
-
-                return;
-            }
-        }
-        else
-        {
-            handler = handlers.FirstOrDefault(
-                h => h.Command == CommandKeys.AddExpense);
-        }
-
-        if (handler is null)
-        {
-            return;
-        }
-
-        await handler.HandleAsync(
+        await processor.ProcessAsync(
             botClient,
-            message,
+            update,
             cancellationToken);
-        
     }
 
     private Task HandlePollingErrorAsync(

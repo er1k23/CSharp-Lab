@@ -34,7 +34,7 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IExpenseAnalyticsService, ExpenseAnalyticsService>();
-
+builder.Services.AddScoped<ITelegramUpdateProcessor, TelegramUpdateProcessor>();
 
 // Register command handlers.
 builder.Services.AddScoped<ICommandHandler, StartCommandHandler>();
