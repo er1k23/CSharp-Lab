@@ -39,4 +39,8 @@ public class ChatService : IChatService
         return chat;
     }
 
+    public async Task<bool> ChatExistsAsync(long chatId)
+    {
+        return await _context.Chats.AnyAsync(chat => chat.Id == chatId);
+    }
 }
