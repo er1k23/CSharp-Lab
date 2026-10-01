@@ -23,11 +23,26 @@ public class StartCommandHandler : ICommandHandler
     {
         var chatId = message.Chat.Id;
 
-        var chat = await _chatService.RegisterChatAsync(chatId);
+        await _chatService.RegisterChatAsync(chatId);
+        
+        var text =
+            "💰 Finance Assistant\n\n" +
+            "Welcome! Your chat has been registered.\n\n" +
+            "📝 Add an expense:\n" +
+            "<amount> <category> [note]\n\n" +
+            "Examples:\n" +
+            "4.50 coffee\n" +
+            "12,50 food lunch\n" +
+            "25 transport taxi\n\n" +
+            "Commands:\n" +
+            "/today — View today's expenses\n" +
+            "/month — View this month's summary\n" +
+            "/expenses — View all your expenses\n" +
+            "/help — Show available commands";
         
         await botClient.SendMessage(
             chatId: message.Chat.Id,
-            text: "Welcome 🤗 Your finance bot is running.",
+            text: text,
             cancellationToken: cancellationToken);
     }
 }
