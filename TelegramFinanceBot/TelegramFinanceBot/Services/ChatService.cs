@@ -43,4 +43,9 @@ public class ChatService : IChatService
     {
         return await _context.Chats.AnyAsync(chat => chat.Id == chatId);
     }
+
+    public async Task<List<Chat>> GetAllChatsAsync()
+    {
+        return await _context.Chats.ToListAsync();
+    }
 }

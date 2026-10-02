@@ -40,6 +40,7 @@ builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IExpenseAnalyticsService, ExpenseAnalyticsService>();
 builder.Services.AddScoped<ITelegramUpdateProcessor, TelegramUpdateProcessor>();
+builder.Services.AddHostedService<DailyDigestWorker>();
 
 // Register command handlers.
 builder.Services.AddScoped<ICommandHandler, StartCommandHandler>();
