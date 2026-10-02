@@ -30,6 +30,11 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
     return new TelegramBotClient(telegramOptions.BotToken);
 });
 
+builder.Services.AddControllers(options =>
+{
+    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+});
+
 // Register the expense service with a scoped lifetime.
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -45,9 +50,12 @@ builder.Services.AddScoped<ICommandHandler, MonthCommandHandler>();
 builder.Services.AddScoped<ICommandHandler, HelpCommandHandler>();
 
 // Register the background worker that receives Telegram updates.
-builder.Services.AddHostedService<TelegramPollingWorker>();
+// builder.Services.AddHostedService<TelegramPollingWorker>();
+builder.Services.AddHostedService<WebhookSetupWorker>();
 
 // Build and run the application.
 var app = builder.Build();
+
+app.MapControllers();
 
 app.Run();
