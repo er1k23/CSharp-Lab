@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TelegramFinanceBot.Interfaces;
+using Microsoft.Extensions.Options;
+using TelegramFinanceBot.Configuration;
+using TelegramFinanceBot.DTOs.Report;
 
 namespace TelegramFinanceBot.Controllers;
 
@@ -10,13 +13,16 @@ public class ReportController : Controller
 {
     private readonly IChatService _chatService;
     private readonly IExpenseAnalyticsService _analyticsService;
-
+    private readonly IOptions<TelegramOptions> _telegramOptions;
+    
     public ReportController(
         IChatService chatService,
-        IExpenseAnalyticsService analyticsService)
+        IExpenseAnalyticsService analyticsService,
+        IOptions<TelegramOptions> telegramOptions)
     {
         _analyticsService = analyticsService;
         _chatService = chatService;
+        _telegramOptions = telegramOptions;
     }
 
     [HttpGet("{token}")]
@@ -33,6 +39,10 @@ public class ReportController : Controller
             chat.Id,
             DateTime.UtcNow);
 
-        return View(report);
+        return View(new ReportViewModel
+        {
+            Report = report,
+            Currency = _telegramOptions.Value.Currency
+        });
     }
 }

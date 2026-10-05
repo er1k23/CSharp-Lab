@@ -1,18 +1,18 @@
-@model TelegramFinanceBot.DTOs.Analytics.DetailedExpenseReportDto
+@model TelegramFinanceBot.DTOs.Report.ReportViewModel
 
 @{
     ViewData["Title"] = "Financial Report";
 
-    var summary = Model.Summary;
-    var currency = "AMD";
+    var summary = Model.Report.Summary;
+    var currency = Model.Currency;
 
-    var categoryTotal = Model.CategoryBreakdown.Sum(x => x.TotalAmount);
-    var maxCategoryAmount = Model.CategoryBreakdown.Any()
-        ? Model.CategoryBreakdown.Max(x => x.TotalAmount)
+    var categoryTotal = Model.Report.CategoryBreakdown.Sum(x => x.TotalAmount);
+    var maxCategoryAmount = Model.Report.CategoryBreakdown.Any()
+        ? Model.Report.CategoryBreakdown.Max(x => x.TotalAmount)
         : 0m;
 
-    var maxDailyAmount = Model.Last14Days.Any()
-        ? Model.Last14Days.Max(x => x.TotalAmount)
+    var maxDailyAmount = Model.Report.Last14Days.Any()
+        ? Model.Report.Last14Days.Max(x => x.TotalAmount)
         : 0m;
 }
 
@@ -178,10 +178,10 @@
                 <span class="section-icon">◈</span>
             </div>
 
-            @if (Model.CategoryBreakdown.Any())
+            @if (Model.Report.CategoryBreakdown.Any())
             {
                 <div class="category-list">
-                    @foreach (var category in Model.CategoryBreakdown)
+                    @foreach (var category in Model.Report.CategoryBreakdown)
                     {
                         var categoryPercent = categoryTotal > 0
                             ? (double)(category.TotalAmount / categoryTotal * 100)
@@ -285,10 +285,10 @@
             <span class="section-icon">▥</span>
         </div>
 
-        @if (Model.Last14Days.Any())
+        @if (Model.Report.Last14Days.Any())
         {
             <div class="daily-list">
-                @foreach (var day in Model.Last14Days)
+                @foreach (var day in Model.Report.Last14Days)
                 {
                     var dailyWidth = maxDailyAmount > 0
                         ? (double)(day.TotalAmount / maxDailyAmount * 100)
@@ -330,7 +330,7 @@
             <span class="section-icon">≡</span>
         </div>
 
-        @if (Model.RecentExpenses.Any())
+        @if (Model.Report.RecentExpenses.Any())
         {
             <div class="expense-table-wrapper">
                 <table class="expense-table">
@@ -344,7 +344,7 @@
                     </thead>
 
                     <tbody>
-                        @foreach (var expense in Model.RecentExpenses)
+                        @foreach (var expense in Model.Report.RecentExpenses)
                         {
                             <tr>
                                 <td>
