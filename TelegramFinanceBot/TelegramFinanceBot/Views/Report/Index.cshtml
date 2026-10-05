@@ -1,0 +1,401 @@
+@model TelegramFinanceBot.DTOs.Analytics.DetailedExpenseReportDto
+
+@{
+    ViewData["Title"] = "Financial Report";
+
+    var summary = Model.Summary;
+    var currency = "AMD";
+
+    var categoryTotal = Model.CategoryBreakdown.Sum(x => x.TotalAmount);
+    var maxCategoryAmount = Model.CategoryBreakdown.Any()
+        ? Model.CategoryBreakdown.Max(x => x.TotalAmount)
+        : 0m;
+
+    var maxDailyAmount = Model.Last14Days.Any()
+        ? Model.Last14Days.Max(x => x.TotalAmount)
+        : 0m;
+}
+
+<link rel="stylesheet" href="~/css/report.css" />
+
+<div class="report-page">
+
+    <!-- Header -->
+    <header class="report-header">
+        <div>
+            <div class="eyebrow">PERSONAL FINANCE</div>
+            <h1>Financial Report</h1>
+            <p class="header-subtitle">
+                A clear overview of your spending, activity and financial habits.
+            </p>
+        </div>
+
+        <div class="header-badge">
+            <span class="badge-dot"></span>
+            Live report
+        </div>
+    </header>
+
+    <!-- Main total -->
+    <section class="hero-card">
+        <div class="hero-content">
+            <div>
+                <p class="hero-label">TOTAL SPENDING THIS MONTH</p>
+                <div class="hero-amount">
+                    @summary.MonthTotal.ToString("N0")
+                    <span>@currency</span>
+                </div>
+                <p class="hero-description">
+                    Based on @summary.ExpenseCount expense@(summary.ExpenseCount == 1 ? "" : "s")
+                    recorded this month.
+                </p>
+            </div>
+
+            <div class="hero-mark">
+                <span>↗</span>
+            </div>
+        </div>
+
+        <div class="hero-footer">
+            <div>
+                <span class="mini-label">Typical day</span>
+                <strong>@summary.TypicalDayAmount.ToString("N0") @currency</strong>
+            </div>
+
+            <div>
+                <span class="mini-label">Last 7 days</span>
+                <strong>@summary.Last7DaysTotal.ToString("N0") @currency</strong>
+            </div>
+
+            <div>
+                <span class="mini-label">Previous 7 days</span>
+                <strong>@summary.Previous7DaysTotal.ToString("N0") @currency</strong>
+            </div>
+        </div>
+    </section>
+
+    <!-- KPI cards -->
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon orange">₳</div>
+            <div>
+                <p>Total spent</p>
+                <h2>@summary.MonthTotal.ToString("N0") <small>@currency</small></h2>
+                <span class="stat-caption">Current month</span>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon dark">#</div>
+            <div>
+                <p>Transactions</p>
+                <h2>@summary.ExpenseCount</h2>
+                <span class="stat-caption">Recorded expenses</span>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon gold">7D</div>
+            <div>
+                <p>Recent spending</p>
+                <h2>@summary.Last7DaysTotal.ToString("N0") <small>@currency</small></h2>
+                <span class="stat-caption">Last 7 days</span>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon light">AVG</div>
+            <div>
+                <p>Typical day</p>
+                <h2>@summary.TypicalDayAmount.ToString("N0") <small>@currency</small></h2>
+                <span class="stat-caption">Average so far</span>
+            </div>
+        </article>
+    </section>
+
+    <!-- Comparison -->
+    <section class="section-card comparison-card">
+        <div class="section-heading">
+            <div>
+                <span class="section-kicker">SPENDING RHYTHM</span>
+                <h2>Recent activity</h2>
+            </div>
+            <span class="section-icon">◔</span>
+        </div>
+
+        <div class="comparison-grid">
+            <div class="comparison-item">
+                <div class="comparison-top">
+                    <span>Last 7 days</span>
+                    <strong>@summary.Last7DaysTotal.ToString("N0") @currency</strong>
+                </div>
+                <div class="progress-track">
+                    @{
+                        var last7Percent = summary.MonthTotal > 0
+                            ? Math.Min(100, (double)(summary.Last7DaysTotal / summary.MonthTotal * 100))
+                            : 0;
+                    }
+                    <div class="progress-fill" style="width: @last7Percent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                </div>
+            </div>
+
+            <div class="comparison-item">
+                <div class="comparison-top">
+                    <span>Previous 7 days</span>
+                    <strong>@summary.Previous7DaysTotal.ToString("N0") @currency</strong>
+                </div>
+                <div class="progress-track">
+                    @{
+                        var previous7Percent = summary.MonthTotal > 0
+                            ? Math.Min(100, (double)(summary.Previous7DaysTotal / summary.MonthTotal * 100))
+                            : 0;
+                    }
+                    <div class="progress-fill muted" style="width: @previous7Percent.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insight-box">
+            <span class="insight-icon">i</span>
+            <p>
+                Your report compares the latest 7-day period with the 7 days before it.
+                Use this section to quickly understand whether your recent spending
+                activity is becoming more or less intense.
+            </p>
+        </div>
+    </section>
+
+    <!-- Two-column area -->
+    <div class="two-column">
+
+        <!-- Categories -->
+        <section class="section-card">
+            <div class="section-heading">
+                <div>
+                    <span class="section-kicker">BREAKDOWN</span>
+                    <h2>Spending by category</h2>
+                </div>
+                <span class="section-icon">◈</span>
+            </div>
+
+            @if (Model.CategoryBreakdown.Any())
+            {
+                <div class="category-list">
+                    @foreach (var category in Model.CategoryBreakdown)
+                    {
+                        var categoryPercent = categoryTotal > 0
+                            ? (double)(category.TotalAmount / categoryTotal * 100)
+                            : 0;
+
+                        var categoryWidth = maxCategoryAmount > 0
+                            ? (double)(category.TotalAmount / maxCategoryAmount * 100)
+                            : 0;
+
+                        <div class="category-row">
+                            <div class="category-main">
+                                <div class="category-name">
+                                    <span class="category-dot"></span>
+                                    <span>@category.Category</span>
+                                </div>
+
+                                <div class="category-value">
+                                    <strong>@category.TotalAmount.ToString("N0") @currency</strong>
+                                    <span>@category.ExpenseCount expense@(category.ExpenseCount == 1 ? "" : "s")</span>
+                                </div>
+                            </div>
+
+                            <div class="category-bar">
+                                <div class="category-bar-fill"
+                                     style="width: @categoryWidth.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                            </div>
+
+                            <div class="category-percent">
+                                @categoryPercent.ToString("0.0")%
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <span>◎</span>
+                    <p>No category data available for this month.</p>
+                </div>
+            }
+        </section>
+
+        <!-- Top categories -->
+        <section class="section-card accent-card">
+            <div class="section-heading">
+                <div>
+                    <span class="section-kicker">TOP 3</span>
+                    <h2>Your biggest categories</h2>
+                </div>
+                <span class="section-icon">★</span>
+            </div>
+
+            @if (summary.TopCategories.Any())
+            {
+                <div class="top-category-list">
+                    @{
+                        var rank = 1;
+                    }
+
+                    @foreach (var category in summary.TopCategories)
+                    {
+                        <div class="top-category">
+                            <div class="rank">@rank</div>
+
+                            <div class="top-category-info">
+                                <strong>@category.Category</strong>
+                                <span>@category.ExpenseCount transaction@(category.ExpenseCount == 1 ? "" : "s")</span>
+                            </div>
+
+                            <div class="top-category-amount">
+                                @category.TotalAmount.ToString("N0")
+                                <small>@currency</small>
+                            </div>
+                        </div>
+
+                        rank++;
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <span>★</span>
+                    <p>No top categories yet.</p>
+                </div>
+            }
+        </section>
+    </div>
+
+    <!-- Daily activity -->
+    <section class="section-card">
+        <div class="section-heading">
+            <div>
+                <span class="section-kicker">14-DAY VIEW</span>
+                <h2>Daily spending activity</h2>
+                <p class="section-description">
+                    Your spending for each of the last 14 calendar days.
+                </p>
+            </div>
+            <span class="section-icon">▥</span>
+        </div>
+
+        @if (Model.Last14Days.Any())
+        {
+            <div class="daily-list">
+                @foreach (var day in Model.Last14Days)
+                {
+                    var dailyWidth = maxDailyAmount > 0
+                        ? (double)(day.TotalAmount / maxDailyAmount * 100)
+                        : 0;
+
+                    <div class="daily-row">
+                        <div class="daily-date">
+                            <strong>@day.Date.ToString("ddd")</strong>
+                            <span>@day.Date.ToString("dd.MM")</span>
+                        </div>
+
+                        <div class="daily-bar-area">
+                            <div class="daily-bar-track">
+                                <div class="daily-bar-fill"
+                                     style="width: @dailyWidth.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                            </div>
+                        </div>
+
+                        <div class="daily-meta">
+                            <strong>@day.TotalAmount.ToString("N0") @currency</strong>
+                            <span>@day.ExpenseCount expense@(day.ExpenseCount == 1 ? "" : "s")</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    <!-- Recent expenses -->
+    <section class="section-card">
+        <div class="section-heading">
+            <div>
+                <span class="section-kicker">TRANSACTIONS</span>
+                <h2>Recent expenses</h2>
+                <p class="section-description">
+                    Your 20 most recent recorded expenses.
+                </p>
+            </div>
+            <span class="section-icon">≡</span>
+        </div>
+
+        @if (Model.RecentExpenses.Any())
+        {
+            <div class="expense-table-wrapper">
+                <table class="expense-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Note</th>
+                            <th class="amount-column">Amount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var expense in Model.RecentExpenses)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="date-cell">
+                                        <strong>@expense.SpentAt.ToString("dd.MM.yyyy")</strong>
+                                        <span>@expense.SpentAt.ToString("HH:mm") UTC</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="category-pill">@expense.Category</span>
+                                </td>
+
+                                <td class="note-cell">
+                                    @if (!string.IsNullOrWhiteSpace(expense.Note))
+                                    {
+                                        @expense.Note
+                                    }
+                                    else
+                                    {
+                                        <span class="no-note">No note</span>
+                                    }
+                                </td>
+
+                                <td class="amount-cell">
+                                    @expense.Amount.ToString("N0") @currency
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <span>○</span>
+                <p>No expenses have been recorded yet.</p>
+            </div>
+        }
+    </section>
+
+    <!-- Footer -->
+    <footer class="report-footer">
+        <div>
+            <strong>Finance Assistant</strong>
+            <span>Personal spending dashboard</span>
+        </div>
+
+        <div class="footer-note">
+            All dates are displayed in UTC.
+        </div>
+    </footer>
+</div>

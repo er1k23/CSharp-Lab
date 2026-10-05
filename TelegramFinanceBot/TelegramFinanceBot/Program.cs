@@ -30,7 +30,7 @@ builder.Services.AddSingleton<ITelegramBotClient>(serviceProvider =>
     return new TelegramBotClient(telegramOptions.BotToken);
 });
 
-builder.Services.AddControllers(options =>
+builder.Services.AddControllersWithViews(options =>
 {
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
@@ -56,6 +56,8 @@ builder.Services.AddHostedService<WebhookSetupWorker>();
 
 // Build and run the application.
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

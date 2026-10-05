@@ -48,4 +48,9 @@ public class ChatService : IChatService
     {
         return await _context.Chats.ToListAsync();
     }
+
+    public async Task<Chat?> GetChatByReportTokenAsync(string reportToken)
+    {
+        return await _context.Chats.FirstOrDefaultAsync(chat => chat.ReportToken == reportToken);
+    }
 }

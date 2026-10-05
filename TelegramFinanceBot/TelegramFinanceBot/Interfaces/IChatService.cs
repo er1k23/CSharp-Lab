@@ -9,4 +9,6 @@ public interface IChatService
     Task<bool> ChatExistsAsync(long chatId);
 
     Task<List<Chat>> GetAllChatsAsync();
+    
+    Task<Chat?> GetChatByReportTokenAsync(string reportToken);
 }
